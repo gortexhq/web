@@ -1,0 +1,58 @@
+version: 2
+
+# Dependabot keeps GitHub Actions and npm dependencies current.
+#
+# Scorecard bumps the "Pinned-Dependencies" score when actions are pinned
+# to full commit SHAs; enabling updates here + allowing Dependabot to
+# rewrite `@v6` refs to `@<sha>` is the maintainable path to that score.
+
+updates:
+  # GitHub Actions across every workflow file (ci.yml, ...).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Etc/UTC
+    commit-message:
+      prefix: ci
+      include: scope
+    labels:
+      - dependencies
+      - github-actions
+    # Group everything non-major into one PR per week to keep the
+    # notification rate sane. Majors get their own PRs so they can be
+    # reviewed carefully (Actions majors occasionally break).
+    groups:
+      actions-minor-patch:
+        patterns: ["*"]
+        update-types:
+          - minor
+          - patch
+
+  # npm dependencies.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "05:00"
+      timezone: Etc/UTC
+    commit-message:
+      prefix: deps
+      include: scope
+    labels:
+      - dependencies
+      - javascript
+    # Same strategy — minor/patch grouped, majors separate. React,
+    # Next.js, and tailwind majors tend to carry migration work, so
+    # they each deserve their own PR. Next.js canary / @types / build
+    # tooling would otherwise flood the inbox.
+    groups:
+      npm-minor-patch:
+        patterns: ["*"]
+        update-types:
+          - minor
+          - patch
+    open-pull-requests-limit: 10

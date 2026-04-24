@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gortex Web
 
-## Getting Started
+The browser UI for [Gortex](https://github.com/zzet/gortex) — a code
+intelligence engine that indexes repositories into an in-memory knowledge
+graph. This Next.js app talks to a gortex server over HTTP+SSE and renders
+the graph, processes, contracts, guards, and investigations.
 
-First, run the development server:
+> Looking for the CLI / MCP server / graph engine? That lives in
+> [zzet/gortex](https://github.com/zzet/gortex). This repo is the UI only.
+
+## Quick start
 
 ```bash
+# 1. Start a gortex server in the repo you want to explore
+gortex serve                       # defaults to http://localhost:4747
+
+# 2. In this repo, run the web UI
+npm install
+cp .env.local.example .env.local   # edit if your server isn't on :4747
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Open http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Configuration
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Configuration is via `.env.local` (see `.env.local.example`):
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable                     | Default                   | Purpose                                             |
+|------------------------------|---------------------------|-----------------------------------------------------|
+| `NEXT_PUBLIC_GORTEX_URL`     | `http://localhost:4747`   | Base URL of the gortex server                       |
+| `NEXT_PUBLIC_GORTEX_TOKEN`   | _(unset)_                 | Bearer token — only when the server runs `--auth-token` |
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run dev         # dev server on :3000 (HMR)
+npm run build       # production build
+npm run start       # serve the production build
+npm run typecheck   # tsc --noEmit
+npm run lint        # next lint
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Or via `make`:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+make install        # npm install
+make dev            # npm run dev
+make check          # typecheck + lint + build (same as CI)
+make clean          # drop .next and tsbuildinfo
+```
 
-## Deploy on Vercel
+## Project layout
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/                Next.js App Router pages, components, and lib/hooks
+public/             Static assets
+.env.local.example  Server URL + optional bearer token
+AGENTS.md           Source-of-truth doc for how pages consume data
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Read [`AGENTS.md`](AGENTS.md) before making changes — it documents the
+`lib/hooks.ts` → `/v1/*` contract the UI depends on.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[Code of Conduct](CODE_OF_CONDUCT.md). Security issues: see
+[SECURITY.md](SECURITY.md).
+
+## License
+
+See [LICENSE.md](LICENSE.md). Source-available under a PolyForm-based
+license; commercial license available for organizations above the
+thresholds described in the license.
